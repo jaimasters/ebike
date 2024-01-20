@@ -10,12 +10,12 @@ int integers[10][7] = {
   {0, 1, 1, 0, 0, 0 ,0},
   {1, 1, 0, 1, 1, 0 ,1},
   {1, 1, 1, 1, 0, 0 ,1},
-  {0, 0, 0, 0, 0, 0 ,0},
-  {0, 0, 0, 0, 0, 0 ,0},
+  {0, 1, 1, 0, 0, 1 ,1},
+  {1, 0, 1, 1, 0, 1 ,1},
   {1, 0, 1, 1, 1, 1 ,1},
-  {0, 0, 0, 0, 0, 0 ,0},
+  {1, 1, 1, 0, 0, 0 ,0},
   {1, 1, 1, 1, 1, 1 ,1},
-  {0, 0, 0, 0, 0, 0 ,0},
+  {1, 1, 1, 1, 0, 1 ,1},
 };
 
 
@@ -58,26 +58,22 @@ int write_out_binary(int input[4][7], int decimal[4], int freq) {
   off_digits();
 }
 
-int write_out_numerals( int input[4], int freq){
+int write_out_numerals( int input[4], int freq, int i_dp){
   for (int i_digit = 0; i_digit < 4; i_digit++) {
     // PER DIGIT
     off_digits();
-
-    int eight[7] = {1, 1, 1, 1, 1, 1 ,1};
-
-
     // write new number
     // get current digits subdigits
     for (int i_subdigit = 0; i_subdigit < 7; i_subdigit++){
-      //if ((eight[i_subdigit]) == 1) {
-      //if ((integers[input[i_subdigit]][i_subdigit]) == 1) {
+
       if ((integers[input[i_digit]][i_subdigit]) == 1) {
         digitalWrite(subdigits[i_subdigit]+1,HIGH);
       } else {
         digitalWrite(subdigits[i_subdigit]+1,LOW);
       } 
-      
     }
+    //Add dp if needed
+    if(i_digit == i_dp){ digitalWrite(dp+1, HIGH);} else { digitalWrite(dp+1, LOW);}
     // open digit 
     digitalWrite(digits[i_digit]+1,LOW);
     // sleep for frequency
@@ -85,19 +81,27 @@ int write_out_numerals( int input[4], int freq){
   }
   off_digits();
 }
-//testing
-int one[4][7] = {
-{0,0,0,0,0,0,0},
-{0,0,0,0,0,0,0},
-{0,0,1,0,0,0,0},
-{0,0,0,1,0,0,0},
-};
 
-int bruh[4] {0,0,3,6};
+void write_out_float(float input, int freq) {
+  String str_input = String(input);
+
+  int decimal_place = str_input.indexOf("."); 
+  str_input.remove(decimal_place,1);
+
+  int num_output[4];
+  for(int i = 0; i<4; i++){
+    String singleDigit = String(str_input[i]);
+    num_output[i] = singleDigit.toInt();
+    Serial.print(num_output[i]);
+
+  }
+  Serial.println();
+  write_out_numerals(num_output,freq,decimal_place-1);
+}
 
 
 
 void loop() {
-write_out_numerals(bruh,1000);
-
+//write_out_numerals(bruh,1000);
+write_out_float(69.420,1000);
 }
